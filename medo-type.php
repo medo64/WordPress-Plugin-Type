@@ -42,6 +42,7 @@ add_shortcode('sourcecode', 'snippet_pre_shortcode_callback');
 
 add_filter('no_texturize_shortcodes', 'snippet_pre_shortcode_notexturize_filter');
 wp_enqueue_style('medo64type', plugins_url('/css/style.css', __FILE__), null, null, 'all');
+wp_enqueue_script('medo64type', plugins_url('/js/script.js', __FILE__), array('jquery'), 1.1, true);
 
 
 function snippet_pre_shortcode_callback($atts, $content = null) {
@@ -80,16 +81,18 @@ function snippet_pre_shortcode_callback($atts, $content = null) {
         $content = implode(PHP_EOL, $lines);
     }
 
+    $id = getUuidV4();
+
     $header = "";
     if (strlen($title)) {
         $header .= "<div>";
         $header .= "<span>" .$title . "</span>";
-        $header .= "<button onclick=\"medo64type_copy('id')\">Copy</button>";
+        $header .= "<button onclick=\"medo64type_copy('" . $id . "')\">Copy</button>";
         $header .= "</div>";
     }
 
 
-    return "<pre class=\"medo64type\">" . $header . "<code>" . $content . "</code></pre>";
+    return "<pre class=\"medo64type\">" . $header . "<code id=\"" . $id . "\">" . $content . "</code></pre>";
 }
 
 
@@ -139,6 +142,18 @@ function snippet_pre_clean($content) {
 
     $content = str_replace("\xE2\x80\xA6", "<span style=\"opacity:0.25;\">\xE2\x80\xA6</span>", $content);
     return $content;
+}
+
+
+function getUuidV4() { //RFC 4122 (4.4.)
+    return sprintf('%04x%04x-%04x-%04x-%02x%02x-%04x%04x%04x',
+        mt_rand(0x0000, 0xffff), mt_rand(0, 0xffff),                              //time_low
+        mt_rand(0x0000, 0xffff),                                                  //time_mid
+        mt_rand(0x0000, 0x0fff) | 0x4000,                                         //time_hi_and_version
+        mt_rand(0x00, 0x3f) | 0x80,                                               //clock_seq_hi_and_reserved
+        mt_rand(0x00, 0xff),                                                      //clock_seq_low
+        mt_rand(0x0000, 0xffff), mt_rand(0x0000, 0xffff), mt_rand(0x0000, 0xffff) //node
+    );
 }
 
 ?>
