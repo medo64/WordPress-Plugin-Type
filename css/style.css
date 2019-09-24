@@ -1,5 +1,5 @@
 .medo64type { border-radius: 0.5em 0.5em 0 0; color: black; padding: 0; }
-.medo64type div { background: rgba(0, 0, 0, .2); border: 0; margin: 0; padding: 0.5em; }
+.medo64type div { background: rgba(0, 0, 0, .2); padding: 0.5em; }
 .medo64type div button { background: none; border: 0; border-radius: 0; box-shadow: none; color: black; float: right; margin: 0 0.5em 0 0; padding: 0 0.2em 0 0.2em; }
 .medo64type code { border-radius: 0; display: block; padding: 0.5em; }
 .medo64type code span::before { color:blue; content: attr(data-content); }
