@@ -41,6 +41,7 @@ add_shortcode('sql', 'snippet_pre_shortcode_callback');
 add_shortcode('sourcecode', 'snippet_pre_shortcode_callback');
 
 add_filter('no_texturize_shortcodes', 'snippet_pre_shortcode_notexturize_filter');
+wp_enqueue_style('medo64type', plugins_url('/css/custom.css', __FILE__), null, null, 'all');
 
 
 function snippet_pre_shortcode_callback($atts, $content = null) {
@@ -77,7 +78,7 @@ function snippet_pre_shortcode_callback($atts, $content = null) {
         $content = implode(PHP_EOL, $lines);
     }
 
-    return "<pre style=\"color:Black;\">" . $content . "</pre>";
+    return "<pre class=\"medo64type\">" . "<code>" . $content . "</code></pre>";
 }
 
 
