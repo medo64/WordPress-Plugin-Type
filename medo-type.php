@@ -49,7 +49,8 @@ function snippet_pre_shortcode_callback($atts, $content = null) {
         shortcode_atts(
             array(
                 'name' => '',
-                'highlight' => ''
+                'highlight' => '',
+                'title' => ''
             ),
             $atts
         )
@@ -57,6 +58,7 @@ function snippet_pre_shortcode_callback($atts, $content = null) {
     $atts = (array)$atts;
 
     $atts_highlight = isset($atts['highlight']) ? $atts['highlight'] : "";
+    $atts_title = isset($atts['title']) ? $atts['title'] : "";
 
     $content = snippet_pre_clean($content);
 
@@ -78,7 +80,16 @@ function snippet_pre_shortcode_callback($atts, $content = null) {
         $content = implode(PHP_EOL, $lines);
     }
 
-    return "<pre class=\"medo64type\">" . "<code>" . $content . "</code></pre>";
+    $header = "";
+    if (strlen($title)) {
+        $header .= "<div>";
+        $header .= "<span>" .$title . "</span>";
+        $header .= "<button onclick=\"medo64type_copy('id')\">Copy</button>";
+        $header .= "</div>";
+    }
+
+
+    return "<pre class=\"medo64type\">" . $header . "<code>" . $content . "</code></pre>";
 }
 
 
