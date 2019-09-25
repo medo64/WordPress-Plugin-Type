@@ -53,8 +53,8 @@ function medo64type_shortcode_callback($atts, $content = null) {
     extract(
         shortcode_atts(
             array(
-                'name' => '',
                 'highlight' => '',
+                'prompt' => '',
                 'title' => ''
             ),
             $atts
@@ -62,41 +62,65 @@ function medo64type_shortcode_callback($atts, $content = null) {
     );
     $atts = (array)$atts;
 
+    // make sure all attributes are set
     $atts_highlight = isset($atts['highlight']) ? $atts['highlight'] : "";
+    $atts_prompt = isset($atts['prompt']) ? $atts['prompt'] : "";
     $atts_title = isset($atts['title']) ? $atts['title'] : "";
 
-    $content = snippet_pre_clean($content);
+    $id = medo64type_get_uuid();
 
-    $content = snippet_pre_style($content, "**", "<strong>", "</strong>");
-    $content = snippet_pre_style($content, "__", "<em>", "</em>");
-    $content = snippet_pre_style($content, "``", "<span style=\"opacity:0.5;\">", "</span>");
-    $content = snippet_pre_style($content, "^^", "<span style=\"background-color:yellow;\">", "</span>");
-    $content = snippet_pre_style($content, "!!", "<span style=\"background-color:red;\">", "</span>");
-
-    if ($atts_highlight != '') { //compatibility with syntax highlighter
-        $lines = explode(PHP_EOL, $content);
-        $lineIndices = explode(',', $atts_highlight);
-        foreach ($lineIndices as $lineIndex) {
-            $index = intval($lineIndex);
-            if ($index > 0) {
-                $lines[$index - 1] = "<span style=\"background-color:yellow;\">" . $lines[$index - 1] . "</span>";
-            }
-        }
-        $content = implode(PHP_EOL, $lines);
-    }
-
-    $id = getUuidV4();
-
-    $header = "";
+    // setup title
     if (strlen($title)) {
-        $header .= "<div>";
-        $header .= "<span>" .$title . "</span>";
-        $header .= "<button onclick=\"medo64type_copy('" . $id . "')\">Copy</button>";
-        $header .= "</div>";
+        $output .= '<div>';
+        $output .= '<span>' .$title . '</span>';
+        $output .= "<button onclick=\"medo64type_copy('" . $id . "')\">Copy</button>";
+        $output .= '</div>';
     }
 
+    // process code lines
+    $output .= '<code id="' . $id . '">';
+    $lines = preg_split('/$\R?^/m', $content);
+    $index = 0;
+    for ($i = 0; $i < count($lines); $i++) {
+        // filter extra formatting
+        $line = $lines[$i];
+        if (substr($line, -4) === '</p>') { $line = substr($line, 0, strlen($line) - 4); }
+        if (substr($line, -6) === '<br />') {
+            $line = substr($line, 0, strlen($line) - 6);
+        } else if (substr($line, -5) === '<br/>') {
+            $line = substr($line, 0, strlen($line) - 5);
+	}
+        if (substr($line, 0, 3) === "<p>") { $line = substr($line, 3); }
 
-    return "<pre class=\"medo64type\">" . $header . "<code id=\"" . $id . "\">" . $content . "</code></pre>";
+        if (($i === 0) && (strlen(trim($line)) === 0)) { continue; }
+        if (($i === count($lines) - 1) && (strlen($line) === 0)) { continue; }
+
+        $index += 1;
+        if ($index > 1) { $output .= '<br/>'; }
+        if (strlen($atts_prompt) > 0) {
+            if (substr($line, 0, strlen($atts_prompt)) === $atts_prompt) {
+                $output .= '<span data-content="' . $prompt . '">';
+                $line = substr($line, strlen($atts_prompt));
+            } else {
+                $output .= '<span data-content="' . str_pad("", strlen($atts_prompt)) . '">';
+            }
+        } else {
+            $output .= '<span>';
+        }
+
+        $line = medo64type_clean($line);
+        $line = medo64type_style($line, "**", "<strong>", "</strong>");
+        $line = medo64type_style($line, "__", "<em>", "</em>");
+        $line = medo64type_style($line, "``", "<span style=\"opacity:0.5;\">", "</span>");
+        $line = medo64type_style($line, "^^", "<span style=\"background-color:yellow;\">", "</span>");
+        $line = medo64type_style($line, "!!", "<span style=\"background-color:red;\">", "</span>");
+
+        $output .= $line;
+        $output .= '</span>';
+    }
+    $output .= '</code>';
+
+    return '<pre class="medo64type">' . $output . '</pre>';
 }
 
 function medo64type_shortcode_notexturize_filter($shortcodes) {
