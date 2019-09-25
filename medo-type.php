@@ -44,6 +44,9 @@ add_filter('no_texturize_shortcodes', 'medo64type_shortcode_notexturize_filter')
 wp_enqueue_style('medo64type', plugins_url('/css/style.css', __FILE__), null, null, 'all');
 wp_enqueue_script('medo64type', plugins_url('/js/script.js', __FILE__), array('jquery'), 1.1, true);
 
+// postpone autoformatting
+remove_filter('the_content', 'wpautop');
+add_filter('the_content', 'wpautop', 12);
 
 
 function medo64type_shortcode_callback($atts, $content = null) {
