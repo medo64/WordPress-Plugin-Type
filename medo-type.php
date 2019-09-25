@@ -30,22 +30,23 @@ License: MIT
 */
 
 
-add_shortcode('type', 'snippet_pre_shortcode_callback');
-add_shortcode('pre', 'snippet_pre_shortcode_callback');
+add_shortcode('type', 'medo64type_shortcode_callback');
+add_shortcode('pre', 'medo64type_shortcode_callback');
 
-add_shortcode('csharp', 'snippet_pre_shortcode_callback');
-add_shortcode('php', 'snippet_pre_shortcode_callback');
-add_shortcode('plain', 'snippet_pre_shortcode_callback');
-add_shortcode('sql', 'snippet_pre_shortcode_callback');
+add_shortcode('csharp', 'medo64type_shortcode_callback');
+add_shortcode('php', 'medo64type_shortcode_callback');
+add_shortcode('plain', 'medo64type_shortcode_callback');
+add_shortcode('sql', 'medo64type_shortcode_callback');
 
-add_shortcode('sourcecode', 'snippet_pre_shortcode_callback');
+add_shortcode('sourcecode', 'medo64type_shortcode_callback');
 
-add_filter('no_texturize_shortcodes', 'snippet_pre_shortcode_notexturize_filter');
+add_filter('no_texturize_shortcodes', 'medo64type_shortcode_notexturize_filter');
 wp_enqueue_style('medo64type', plugins_url('/css/style.css', __FILE__), null, null, 'all');
 wp_enqueue_script('medo64type', plugins_url('/js/script.js', __FILE__), array('jquery'), 1.1, true);
 
 
-function snippet_pre_shortcode_callback($atts, $content = null) {
+
+function medo64type_shortcode_callback($atts, $content = null) {
     extract(
         shortcode_atts(
             array(
@@ -95,8 +96,7 @@ function snippet_pre_shortcode_callback($atts, $content = null) {
     return "<pre class=\"medo64type\">" . $header . "<code id=\"" . $id . "\">" . $content . "</code></pre>";
 }
 
-
-function snippet_pre_shortcode_notexturize_filter($shortcodes) {
+function medo64type_shortcode_notexturize_filter($shortcodes) {
     $shortcodes[] = 'type';
     $shortcodes[] = 'pre';
     $shortcodes[] = 'csharp';
@@ -108,8 +108,7 @@ function snippet_pre_shortcode_notexturize_filter($shortcodes) {
     return $shortcodes;
 }
 
-
-function snippet_pre_style($content, $symbol, $tagOpen, $tagClose) {
+function medo64type_style($content, $symbol, $tagOpen, $tagClose) {
     while(true) {
         $l = strpos($content, $symbol);
         if ($l === false) { break; }
@@ -121,8 +120,7 @@ function snippet_pre_style($content, $symbol, $tagOpen, $tagClose) {
     return $content;
 }
 
-
-function snippet_pre_clean($content) {
+function medo64type_clean($content) {
     $content = str_replace(array("<br />", "</p>"), "", $content);
     $content = str_replace(array("<p>"), "\n", $content);
     $content = trim($content, "\n\r\0\x0B");
@@ -144,8 +142,7 @@ function snippet_pre_clean($content) {
     return $content;
 }
 
-
-function getUuidV4() { //RFC 4122 (4.4.)
+function medo64type_get_uuid() { //RFC 4122 (4.4.)
     return sprintf('%04x%04x-%04x-%04x-%02x%02x-%04x%04x%04x',
         mt_rand(0x0000, 0xffff), mt_rand(0, 0xffff),                              //time_low
         mt_rand(0x0000, 0xffff),                                                  //time_mid
